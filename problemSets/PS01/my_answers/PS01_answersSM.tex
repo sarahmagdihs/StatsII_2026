@@ -1,0 +1,188 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{graphicx,textcomp}
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{fullpage}
+\usepackage{color}
+\usepackage[reqno]{amsmath}
+\usepackage{amsthm}
+\usepackage{fancyvrb}
+\usepackage{amssymb,enumerate}
+\usepackage[all]{xy}
+\usepackage{endnotes}
+\usepackage{lscape}
+\newtheorem{com}{Comment}
+\usepackage{float}
+\usepackage{hyperref}
+\newtheorem{lem} {Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{obs}{Observation}
+\usepackage[compact]{titlesec}
+\usepackage{dcolumn}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usepackage{multirow}
+\usepackage{xcolor}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+\definecolor{light-gray}{gray}{0.65}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+\lstset{style=mystyle}
+\newcommand{\Sref}[1]{Section~\ref{#1}}
+\newtheorem{hyp}{Hypothesis}
+
+\title{Problem Set 1 - Answers (Applied Stats II)}
+\date{10.02, 2026}
+\author{Sarah Magdihs}
+
+
+\begin{document}
+	\maketitle
+\section*{Question 1} 
+\vspace{.25cm}
+\noindent The Kolmogorov-Smirnov test uses cumulative distribution statistics test the similarity of the empirical distribution of some observed data and a specified PDF, and serves as a goodness of fit test. The test statistic is created by:
+
+$$D = \max_{i=1:n} \Big\{ \frac{i}{n}  - F_{(i)}, F_{(i)} - \frac{i-1}{n} \Big\}$$
+
+\noindent where $F$ is the theoretical cumulative distribution of the distribution being tested and $F_{(i)}$ is the $i$th ordered value. Intuitively, the statistic takes the largest absolute difference between the two distribution functions across all $x$ values. Large values indicate dissimilarity and the rejection of the hypothesis that the empirical distribution matches the queried theoretical distribution. The p-value is calculated from the Kolmogorov-
+Smirnoff CDF:
+
+$$p(D \leq d)= \frac{\sqrt {2\pi}}{d} \sum _{k=1}^{\infty }e^{-(2k-1)^{2}\pi ^{2}/(8d^{2})}$$
+
+
+\noindent which generally requires approximation methods (see \href{https://core.ac.uk/download/pdf/25787785.pdf}{Marsaglia, Tsang, and Wang 2003}). This so-called non-parametric test (this label comes from the fact that the distribution of the test statistic does not depend on the distribution of the data being tested) performs poorly in small samples, but works well in a simulation environment. Write an \texttt{R} function that implements this test where the reference distribution is normal. Using \texttt{R} generate 1,000 Cauchy random variables (\texttt{rcauchy(1000, location = 0, scale = 1)}) and perform the test (remember, use the same seed, something like \texttt{set.seed(123)}, whenever you're generating your own data).\\
+	
+	
+\noindent As a hint, you can create the empirical distribution and theoretical CDF using this code:
+
+\begin{lstlisting}[language=R]
+	# create empirical distribution of observed data
+	ECDF <- ecdf(data)
+	empiricalCDF <- ECDF(data)
+	# generate test statistic
+	D <- max(abs(empiricalCDF - pnorm(data))) \end{lstlisting}
+
+\vspace{3in}
+
+\section*{Answer to Question 1:} 
+\vspace{.25cm}
+\noindent To implement the Kolmogorov-Smirnov test (KS test), I first created the empirical distribution that I used for this question. As outlined by the task, I generated 1,000 Cauchy random variables. I used  the $set.seed()$ function to ensure that the results are reproducible. 
+
+\lstinputlisting[language=R, firstline=62, lastline=66]{PS01_answersSM.R}  
+
+\noindent Then, I wrote an R function that implements the KS test. As shown below, I first made sure that the data is sorted. I constructed the empirical CDF using the $ecdf()$ function, as was suggested in the hint above. While constructing the thereotical CDF was not strictly necessary, I decided to explicitly include this step because it helped me make sense of the formula as a whole.  Lastly, the function computes the KS test statistic by calculating the maximum absolute difference between the empirical CDF and the theoretical CDF across all observed values. 
+
+\lstinputlisting[language=R, firstline=85, lastline=94]{PS01_answersSM.R}  
+
+\noindent This produced the following test statistic: 
+\lstinputlisting[language=R, firstline=96, lastline=97]{PS01_answersSM.R}  
+\begin{verbatim}
+	[1] 0.1347281
+\end{verbatim}
+
+\noindent Since the last step of a hypothesis test is to compare and interpret the produced TS, I calculated the p-value. For this, I created an R function that uses the equation which is outlined above. The approximation uses 1,000 terms. 
+
+\lstinputlisting[language=R, firstline=106, lastline=119]{PS01_answersSM.R}  
+
+\noindent Based on this, R provided the following output: 
+\begin{verbatim}
+[1] 5.652523e-29
+[1] "Reject H0: Evidence suggests that data does not follow a normal 
+     distribution"
+\end{verbatim}
+
+\noindent Since  $H_0$ is that the sample follows a specified distribution (in this case: a normal distribution), the evidence suggest that $H_0$ must be rejected ($p<0.05$). Hence, the test leads to the conclusion that the sample does not follow a normal distribution. 
+\vspace{.25cm} 
+
+\noindent Additionally, I compared the manually computed results from above with the output from R's $ks.test$. While these results somewhat differ (which I assume to be due to different scaling?), 
+the KS test statistic remains similar and the p-value is below 0.05 in both cases. This suggests to me that the manual approximation is doing a good enough job. 
+
+\lstinputlisting[language=R, firstline=122, lastline=129]{PS01_answersSM.R}  
+
+\noindent For a better overview, I manually put the results into a table:
+
+\begin{table}[htbp]
+	\centering
+	\caption{Overview: Comparison}
+	\label{tab:placeholder_table}
+	\begin{tabular}{lcc}
+		\hline
+		  & Manual Calculation & ks.test \\
+		\hline
+		KS test statistic & 0.1347281 & 0.1357281 \\
+		p-value & 5.652523e-29 & 1.994304e-16 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\noindent Lastly: Please note that the R-file includes some additional steps (line 68-82) as I first took a step-by-step approach to fully understand what I was doing before wrapping all steps into one function. 
+\vspace{3 cm} 
+
+\section*{Question 2}
+\noindent Estimate an OLS regression in \texttt{R} that uses the Newton-Raphson algorithm (specifically \texttt{BFGS}, which is a quasi-Newton method), and show that you get the equivalent results to using \texttt{lm}. Use the code below to create your data.
+\vspace{.5cm}
+\lstinputlisting[language=R, firstline=51,lastline=53]{PS01.R} 
+\vspace{.25cm}
+
+\section*{Answer to Question 2:} 
+\vspace{.25cm}
+\noindent To show that both approaches produce the same result, I created the data as requested above. Following this, I plotted the data in order to get a better understanding for the data that I am working with. The code that I used is outlined below.
+
+\lstinputlisting[language=R, firstline=142,lastline=150]{PS01_answersSM.R} 
+
+\noindent This produced the following graph:
+\begin{center}
+	\includegraphics[width=0.5\textwidth]{plot.pdf}
+\end{center}
+
+\noindent As a next step, I estimated a linear regression using three approaches: To begin, I used the $lm()$ function. Then, I estimated the OLS model by using the Newton-Raphson algorithm (specifically \texttt{BFGS}). To do so, I built on the models that were presented during the lecture and tutorial. Lastly, I used the $glm()$ function as an alternative method to verify that the second estimation was done correctly. Lastly, I used $stargazer$ to export the main coefficients from all three estimations. 
+
+\lstinputlisting[language=R, firstline=152,lastline=192]{PS01_answersSM.R} 
+\vspace{.25cm}
+\noindent While the original stargazer output would have been okay, I decided at the last minute that the table could be better organised and thus used the results from $\#printing$ to manually create my own table:
+\begin{table}[h]
+	\centering
+	\caption{Comparison of Intercept and Slope Estimates Across Models}
+	\label{tab:model_comparison}
+	\begin{tabular}{lccc}
+		\hline
+		& $lm()$ & $glm()$ & MLE (BFGS) \\
+		\hline
+		Intercept & 0.1391874 &0.1391874 & 0.139170 \\
+		Slope     & 2.7266985 & 2.7266985 & 2.726695 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\noindent In conclusion, the outputs show that GLMs (following a logic of MLE) work equally well as the $lm()$ function since both approaches produced the same results. 
+
+\end{document}
