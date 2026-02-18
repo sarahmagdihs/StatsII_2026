@@ -1,0 +1,305 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{graphicx,textcomp}
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{fullpage}
+\usepackage{color}
+\usepackage[reqno]{amsmath}
+\usepackage{amsthm}
+\usepackage{fancyvrb}
+\usepackage{amssymb,enumerate}
+\usepackage[all]{xy}
+\usepackage{endnotes}
+\usepackage{lscape}
+\newtheorem{com}{Comment}
+\usepackage{float}
+\usepackage{hyperref}
+\newtheorem{lem} {Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{obs}{Observation}
+\usepackage[compact]{titlesec}
+\usepackage{dcolumn}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usepackage{multirow}
+\usepackage{xcolor}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+\definecolor{light-gray}{gray}{0.65}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+\lstset{style=mystyle}
+\newcommand{\Sref}[1]{Section~\ref{#1}}
+\newtheorem{hyp}{Hypothesis}
+
+\title{Problem Set 2 - Applied Stats II}
+\date{Due: February 18, 2026}
+\author{Sarah Magdihs}
+
+
+\begin{document}
+	\maketitle
+	\section*{Instructions}
+	\begin{itemize}
+		\item Please show your work! You may lose points by simply writing in the answer. If the problem requires you to execute commands in \texttt{R}, please include the code you used to get your answers. Please also include the \texttt{.R} file that contains your code. If you are not sure if work needs to be shown for a particular problem, please ask.
+		\item Your homework should be submitted electronically on GitHub in \texttt{.pdf} form.
+		\item This problem set is due before 23:59 on Wednesday February 18, 2026. No late assignments will be accepted.
+
+	\end{itemize}
+
+	\vspace{.25cm}
+
+\noindent We're interested in what types of international environmental agreements or policies people support (\href{https://www.pnas.org/content/110/34/13763}{Bechtel and Scheve 2013)}. So, we asked 8,500 individuals whether they support a given policy, and for each participant, we vary the (1) number of countries that participate in the international agreement and (2) sanctions for not following the agreement. \\
+
+\noindent Load in the data labeled \texttt{climateSupport.RData} on GitHub, which contains an observational study of 8,500 observations.
+
+\begin{itemize}
+	\item
+	Response variable: 
+	\begin{itemize}
+		\item \texttt{choice}: 1 if the individual agreed with the policy; 0 if the individual did not support the policy
+	\end{itemize}
+	\item
+	Explanatory variables: 
+	\begin{itemize}
+		\item
+		\texttt{countries}: Number of participating countries [20 of 192; 80 of 192; 160 of 192]
+		\item
+		\texttt{sanctions}: Sanctions for missing emission reduction targets [None, 5\%, 15\%, and 20\% of the monthly household costs given 2\% GDP growth]
+		
+	\end{itemize}
+	
+\end{itemize}
+
+\newpage
+\noindent Please answer the following questions:
+
+\begin{enumerate}
+	\item
+	Remember, we are interested in predicting the likelihood of an individual supporting a policy based on the number of countries participating and the possible sanctions for non-compliance.
+	\begin{enumerate}
+		\item [] Fit an additive model. Provide the summary output, the global null hypothesis, and $p$-value. Please describe the results and provide a conclusion.
+
+	\end{enumerate}
+	
+	\item
+	If any of the explanatory variables are statistically significant in this model, then:
+	\begin{enumerate}
+		\item
+		For the policy in which nearly all countries participate [160 of 192], how does increasing sanctions from 5\% to 15\% change the odds that an individual will support the policy? (Interpretation of a coefficient)
+		\item
+		For the policy in which very few countries participate [20 of 192], how does increasing sanctions from 5\% to 15\% change the odds that an individual will support the policy? (Interpretation of a coefficient)
+		\item
+		What is the estimated probability that an individual will support a policy if there are 80 of 192 countries participating with no sanctions? 
+	
+	\end{enumerate}
+	\item
+	Would the answers to 2a and 2b potentially change if we included an interaction term in this model? Why? 
+	\begin{itemize}
+		\item Perform a test to see if including an interaction is appropriate.
+	\end{itemize}
+	\end{enumerate}
+	
+	
+\section*{Task 1: Additive Logistic Regression Model}
+\vspace{.25cm}
+\noindent To fulfil the task, I fit an additive model in which I regress $choice$ on $countries$ and $sanctions$. 
+
+\noindent Intially, I checked out the data and decided to explicitly set a reference category. Since the factors were ordered, I believe R would have taken the first category as reference anyway, but this way I can be absolutely sure. 
+\noindent To do so, I first unordered the factor variables $countries$ and $sanctions$ since the command $relevel$ does not work on ordered factors. Then I set the reference category to "20 of 192" and "None", respectively. 
+
+\lstinputlisting[language=R, firstline=49, lastline=74]{PS02_answersSM.R}  
+
+\noindent Then, I specified the additive model using the $glm$ function, using $binomial$ as the distribution for the model since the output is binary (and we are thus fitting a logistic regression model). 
+
+\lstinputlisting[language=R, firstline=83, lastline=87]{PS02_answersSM.R}  
+\lstinputlisting[language=R, firstline=105, lastline=108]{PS02_answersSM.R}  
+
+\noindent As a result, Table 1 was provided by R. Before actually discussing its implications, I want to first also discuss the Global Null Hypothesis Test. Specifically, the null hypothesis is that all slopes are equal to zero, whereas the alternative hypothesis is that at least one coefficient is unequal to zero. In order to assess this, we need a model to compare the additive model to (=the Null Model; includes only the intercept). To do so, I did the following: 
+
+\lstinputlisting[language=R, firstline=90, lastline=100]{PS02_answersSM.R}  
+\lstinputlisting[language=R, firstline=110, lastline=113]{PS02_answersSM.R}  
+
+\noindent Through this process, I got Table 1 and 2:
+
+% Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
+% Date and time: Wed, Feb 18, 2026 - 14:53:42
+\begin{table}[H] \centering 
+	\caption{Logistic Regression: Support for An Environmental Policy (International)} 
+	\label{} 
+	\begin{tabular}{@{\extracolsep{5pt}}lc} 
+		\\[-1.8ex]\hline 
+		\hline \\[-1.8ex] 
+		& \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
+		\cline{2-2} 
+		\\[-1.8ex] & choice \\ 
+		\hline \\[-1.8ex] 
+		countries80 of 192 & 0.336$^{***}$ \\ 
+		& (0.054) \\ 
+		& \\ 
+		countries160 of 192 & 0.648$^{***}$ \\ 
+		& (0.054) \\ 
+		& \\ 
+		sanctions5\% & 0.192$^{***}$ \\ 
+		& (0.062) \\ 
+		& \\ 
+		sanctions15\% & $-$0.133$^{**}$ \\ 
+		& (0.062) \\ 
+		& \\ 
+		sanctions20\% & $-$0.304$^{***}$ \\ 
+		& (0.062) \\ 
+		& \\ 
+		Constant & $-$0.273$^{***}$ \\ 
+		& (0.054) \\ 
+		& \\ 
+		\hline \\[-1.8ex] 
+		Observations & 8,500 \\ 
+		Log Likelihood & $-$5,784.130 \\ 
+		Akaike Inf. Crit. & 11,580.260 \\ 
+		\hline 
+		\hline \\[-1.8ex] 
+		\textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+	\end{tabular} 
+\end{table}
+
+% Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
+% Date and time: Wed, Feb 18, 2026 - 15:01:49
+\begin{table}[!htbp] \centering 
+	\caption{Anova: Global Null Hypothesis Testing} 
+	\label{} 
+	\begin{tabular}{@{\extracolsep{5pt}} cccccc} 
+		\\[-1.8ex]\hline 
+		\hline \\[-1.8ex] 
+		& Resid. Df & Resid. Dev & Df & Deviance & Pr(\textgreater Chi) \\ 
+		\hline \\[-1.8ex] 
+		1 & $8,499$ & $11,783.410$ & $$ & $$ & $$ \\ 
+		2 & $8,494$ & $11,568.260$ & $5$ & $215.150$ & $0$ \\ 
+		\hline \\[-1.8ex] 
+	\end{tabular} 
+\end{table} 
+
+
+\noindent Additonally, here is the verbatim output, in order to get a better sense of the p-value:
+\begin{verbatim}
+	Model 1: choice ~ 1
+	Model 2: choice ~ countries + sanctions
+	Resid. Df Resid. Dev Df Deviance  Pr(>Chi)    
+	1      8499      11783                          
+	2      8494      11568  5   215.15 < 2.2e-16 ***
+	---
+	Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+\end{verbatim}
+
+\subsection*{Interpretation of Coefficients:}
+\subsubsection*{Global Null Hypothesis Test:}
+\noindent I compared the additive model to a null model using a likelihood ratio test. The output shows that we ought to reject the null hypothesis since the p-value is smaller than $0.05$. This means that at least one predictor significantly affects individuals' policy support.
+
+\subsubsection*{Interpretation of Coefficients of the Additive Model:}
+ 
+\noindent \textbf{Intercept:} When 20 countries participate and there are no sanctions, the expected odds that an individual supports the policy are $e^{-0.273} = 0.761$ (baseline odds ratio), indicating that, on average, individuals are do not support the policy.  
+
+
+\noindent \textbf{Countries:} Generally, an increase in participating countries is associated with an increase in the probability that an individual supports the policy (reference category = 20 out of 192). When 80 (rather than 20) countries participate, the log-odds increase by 0.336 (all else constant). This means that individuals are 1.4 times as likely to to support the policy ($exp(0,336)=1.4$). Similarly, increasing participation from 20 to 160 countries is associated with an increase in log-odds by 0.648 (approximately 1.91 times as likely to support; $exp(0.648)= 1.91$)
+
+
+\noindent \textbf{Sanctions:} The relationship between sanctions and choice is a bit more complex. Compared to no sanctions, a 5\% penalty is associated with an 0.192 increase in the log-odds (all else constant). This means that individuals are roughly 1.21 times as likely to support a policy under these circumstances. In contrast, higher sanctions (when compared to the reference category) reduce support for the policy. Specifically, 15\% sanctions are associated with a decrease in the log-odds by 0.133 ($1-exp(-0.133)=\approx 0.125$, meaning a decrease by 12.5\%) and 20\% sanctions with a decrease by 0.304 ($1-exp(-0.304) \approx 0.26$)
+
+\noindent \textbf{Overall}, then, this suggest that international participation has a significant, positive effect on the probability that individuals support a given policy, whereas sanctions have a significant but mixed effect. While the model obviously cannot speak to this, I could imagine that the positive effect on participation could be related to the perceived legitimacy of a policy. In comparison, sanctions might be viewed as too strict if they exceed a certain limit. 
+
+\section*{Task 2: Sanctions and Probabilities}
+\vspace{.25cm}
+\subsection*{2a and 2b:}
+
+\noindent Task 2a and 2b can be answered simultaneously. The odds ratio does not change, since we are working with an additive model. Thus, we assume that the effect does not depend on the number of countries that participate. 
+
+\noindent I calculated how increasing the sanctions from 5\% to 15\% changes the odds that an individual will support the policy by 'isolating' the relevant coefficients and then exponentiating their difference. 
+
+\lstinputlisting[language=R, firstline=120, lastline=137]{PS02_answersSM.R}  
+
+\noindent As a result, these were the outputs: 
+\begin{verbatim}
+	> odds_ratio
+	sanctions15% 
+	0.7224531 
+	> decrease
+	sanctions15% 
+	0.2775469 
+\end{verbatim} 
+
+\noindent \textbf{Interpretation}: Increasing sanctions from 5\% to 15\% decreases the odds of supporting the policy by about 27.7\% (independent of how many countries participate).
+
+\subsection*{2c:}
+\noindent Moving on , I estimated the probability that an individual will support the policy when 80 of 192 countries participate and there are no sanctions by using the $predict$ function:
+
+\lstinputlisting[language=R, firstline=139, lastline=143]{PS02_answersSM.R}  
+
+\noindent As a result, RStudio provided this output: 
+
+\begin{verbatim}
+	> est_prob_80
+	1 
+	0.5159191 
+\end{verbatim} 
+
+	\noindent \textbf{Interpretation:} Given 80 participating countries with no sanctions, the estimated probability of support is 51.6\%. 
+
+
+\section*{Task 3: Additive vs. Interaction Model}
+\vspace{.25cm}
+
+\noindent Yes, the answer to Question 2a and 2b could change, if we were to include an interaction term. Unlike an additive model (which assumes that the effect of sanctions is not dependent on countries), a model with interaction terms would expect that the effect of sanctions depends on the number of participating countries. 
+
+\noindent To be sure whether the results change, we would have to test whether the interaction actually improves our model. To do this, we can compare both models using $anova$. 
+
+\lstinputlisting[language=R, firstline=149, lastline=170]{PS02_answersSM.R}  
+
+\noindent Using the code above, R provides us with the following output:
+
+% Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
+% Date and time: Wed, Feb 18, 2026 - 17:02:58
+\begin{table}[H] \centering 
+	\caption{Anova: Additive vs. Interaction} 
+	\label{} 
+	\begin{tabular}{@{\extracolsep{5pt}} cccccc} 
+		\\[-1.8ex]\hline 
+		\hline \\[-1.8ex] 
+		& Resid. Df & Resid. Dev & Df & Deviance & Pr(\textgreater Chi) \\ 
+		\hline \\[-1.8ex] 
+		1 & $8,494$ & $11,568.260$ & $$ & $$ & $$ \\ 
+		2 & $8,488$ & $11,561.970$ & $6$ & $6.293$ & $0.391$ \\ 
+		\hline \\[-1.8ex] 
+	\end{tabular} 
+\end{table}
+
+\noindent \textbf{Interpretation:} The p-value is bigger than 0.05, so we fail to reject the null hypothesis, meaning that adding the interaction term does not improve model fit. Therefore, the additive model is sufficient, and the odds ratio results from Task 2 remain the same in this case.
+
+
+\end{document}
