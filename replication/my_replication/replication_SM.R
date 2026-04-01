@@ -411,7 +411,7 @@ logit1 <- glm(partyswitcher ~ EUIntegrationSelf8 * Conchange +
                 age.x + gender.x + white + as.factor(country.x),
               data = merge, family = binomial(link = "logit"))
 summary(logit1)
-
+stargazer(intreg1a, logit1)
 #OR
 exp(cbind(OR = coef(logit1), confint(logit1)))
 
@@ -423,6 +423,8 @@ logit2 <- glm(switchtocons ~ EUIntegrationSelf8 * Conchange +
                 age.x + gender.x + white + as.factor(country.x),
               data = merge2, family = binomial(link = "logit"))
 summary(logit2)
+stargazer(intreg2a, logit2)
+
 exp(cbind(OR = coef(logit2), confint(logit2)))
 
 #####################
@@ -468,6 +470,9 @@ summary(intreg2a)
 join_id <- lm(data= merge2, switchtocons~EUIntegrationSelf8 *Conchange + as.factor(partyIdStrength_extension) + age.x + gender.x + white + as.factor(country.x))
 summary(join_id)
 
+stargazer(intreg2a,join_id, title="Join the Conservatives (Extension)",no.space=TRUE,star.cutoffs = c(0.1, 0.05, 0.01,0.001))
+
+
 #####################
 # EXTENSION: Attitude vs Behaviour
 #####################
@@ -496,9 +501,11 @@ table(merge2$euRefVote_ext_fac, useNA="ifany")
 refvote_defect <- lm(data= merge,partyswitcher~euRefVote_ext_fac *Conchange + age.x + gender.x + white + as.factor(country.x))
 summary(refvote_defect)
 summary(intreg1a)
+stargazer(intreg1a,refvote_defect, title="Defect from the Conservatives (Extension)",no.space=TRUE,star.cutoffs = c(0.1, 0.05, 0.01,0.001))
 
 #Regression 2: Join
 refvote_join <- lm(merge2$switchtocons~merge2$euRefVote_ext_fac*merge2$Conchange+ merge2$age.x + merge2$gender.x + merge2$white + as.factor(merge2$country.x))
 summary(refvote_join)
 summary(intreg2a)
+stargazer(intreg2a,refvote_join, title="Join the Conservatives (Extension)",no.space=TRUE,star.cutoffs = c(0.1, 0.05, 0.01,0.001))
 

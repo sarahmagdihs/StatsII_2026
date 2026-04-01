@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.10.9)  1 APR 2026 21:52
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.10.9)  1 APR 2026 22:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**replication.tex
-(./replication.tex
+**replication_final.tex
+(./replication_final.tex
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
 (/usr/local/texlive/2025/texmf-dist/tex/latex/base/article.cls
@@ -860,7 +860,7 @@ File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count352
 \l__pdf_internal_box=\box77
 )
-(./replication.aux
+(./replication_final.aux
 
 LaTeX Warning: Label `' multiply defined.
 
@@ -883,7 +883,7 @@ LaTeX Warning: Label `' multiply defined.
 LaTeX Warning: Label `' multiply defined.
 
 )
-\openout1 = `replication.aux'.
+\openout1 = `replication_final.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 70.
 LaTeX Font Info:    ... okay on input line 70.
@@ -940,9 +940,9 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 Package xypdf Info: Line width: 0.47998pt on input line 70.
 Package hyperref Info: Link coloring OFF on input line 70.
 
-(./replication.out) (./replication.out)
+(./replication_final.out) (./replication_final.out)
 \@outlinefile=\write7
-\openout7 = `replication.out'.
+\openout7 = `replication_final.out'.
 
 \c@lstlisting=\count359
 
@@ -960,7 +960,7 @@ Package caption Info: End \AtBeginDocument code.
 [3]
 
 [4]
-<figureone.png, id=79, 454.5783pt x 358.941pt>
+<figureone.png, id=83, 454.5783pt x 358.941pt>
 File: figureone.png Graphic file (type png)
 <use figureone.png>
 Package pdftex.def Info: figureone.png  used on input line 201.
@@ -970,12 +970,12 @@ Package pdftex.def Info: figureone.png  used on input line 201.
 [5 <./figureone.png>]
 
 [6]
-<figure2_7.png, id=91, 454.5783pt x 358.941pt>
+<figure2_7.png, id=95, 454.5783pt x 358.941pt>
 File: figure2_7.png Graphic file (type png)
 <use figure2_7.png>
 Package pdftex.def Info: figure2_7.png  used on input line 264.
 (pdftex.def)             Requested size: 225.4804pt x 178.04604pt.
-<figure2_11.png, id=92, 454.5783pt x 358.941pt>
+<figure2_11.png, id=96, 454.5783pt x 358.941pt>
 File: figure2_11.png Graphic file (type png)
 <use figure2_11.png>
 Package pdftex.def Info: figure2_11.png  used on input line 271.
@@ -1003,7 +1003,9 @@ Overfull \hbox (19.93558pt too wide) in paragraph at lines 286--317
 
 [14]
 
-[15] (./replication.aux)
+[15]
+
+[16] (./replication_final.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -1012,17 +1014,23 @@ L3 programming layer <2025-01-18>
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package rerunfilecheck Info: File `replication.out' has not changed.
-(rerunfilecheck)             Checksum: C7E8D939E2EA24E5F131910104733A0F;2667.
+
+Package rerunfilecheck Warning: File `replication_final.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `replication_final.out':
+(rerunfilecheck)             Before: 9D96C88C0EDF5E68BF75A982F078FAE3;2781
+(rerunfilecheck)             After:  F2CA77A61569C1696FE8035C6032B943;2761.
  ) 
 Here is how much of TeX's memory you used:
- 27776 strings out of 473190
- 493975 string characters out of 5715800
- 918912 words of memory out of 5000000
- 50515 multiletter control sequences out of 15000+600000
+ 27779 strings out of 473190
+ 494128 string characters out of 5715800
+ 918937 words of memory out of 5000000
+ 50516 multiletter control sequences out of 15000+600000
  570055 words of font info for 82 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,12n,91p,3243b,534s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,12n,91p,3249b,534s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 ></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pf
 b></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb
@@ -1033,10 +1041,10 @@ sr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr
 cal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/loc
 al/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local
 /texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on replication.pdf (15 pages, 482051 bytes).
+Output written on replication_final.pdf (16 pages, 483062 bytes).
 PDF statistics:
- 196 PDF objects out of 1000 (max. 8388607)
- 154 compressed objects within 2 object streams
- 40 named destinations out of 1000 (max. 500000)
- 116 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 204 PDF objects out of 1000 (max. 8388607)
+ 161 compressed objects within 2 object streams
+ 42 named destinations out of 1000 (max. 500000)
+ 124 words of extra memory for PDF output out of 10000 (max. 10000000)
 
