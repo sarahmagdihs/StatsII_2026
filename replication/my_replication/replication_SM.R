@@ -1,0 +1,504 @@
+##########################
+# Title:        Replication Assignment  
+# Description:  Replication and Extension
+# Author:       Sarah Magdihs
+# R version:    R 4.5.1 
+#Last modified: 01.04.2025
+###########################
+
+###############################
+#### Set Up:
+# load libraries
+# set wd
+# clear global .envir
+###############################
+
+# remove objects
+rm(list=ls())
+# detach all libraries
+detachAllPackages <- function() {
+  basic.packages <- c("package:stats", "package:graphics", "package:grDevices", "package:utils", "package:datasets", "package:methods", "package:base")
+  package.list <- search()[ifelse(unlist(gregexpr("package:", search()))==1, TRUE, FALSE)]
+  package.list <- setdiff(package.list, basic.packages)
+  if (length(package.list)>0)  for (package in package.list) detach(package,  character.only=TRUE)
+}
+detachAllPackages()
+
+# load libraries
+pkgTest <- function(pkg){
+  new.pkg <- pkg[!(pkg %in% installed.packages()[,  "Package"])]
+  if (length(new.pkg)) 
+    install.packages(new.pkg,  dependencies = TRUE)
+  sapply(pkg,  require,  character.only = TRUE)
+}
+
+#load any necessary packages
+
+
+lapply(c("stargazer", "ggplot2", "foreign", "dplyr", "haven"),  pkgTest)
+
+# set wd for current folder
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+getwd()
+
+#####################
+# LOAD DATA (BES)
+#####################
+
+BES6 <-  read.dta("~/Documents/PhD /1st Year Classes /Causal Inference (MT)/Replication/dataverse_files/BES2015_W6_v3.9.dta")
+BES8 <- read.dta("~/Documents/PhD /1st Year Classes /Causal Inference (MT)/Replication/dataverse_files/BES2015_W8_v2.3.dta")
+BES9 <- read.dta("~/Documents/PhD /1st Year Classes /Causal Inference (MT)/Replication/dataverse_files/BES2015_W9_v1.7.dta")
+BES13 <- read.dta("~/Documents/PhD /1st Year Classes /Causal Inference (MT)/Replication/dataverse_files/BES2017_W13_v1.5.dta")
+
+
+#####################
+# REPLICATION OF STUDY
+#####################
+
+#Recoding of Integration Values in Wave 8 and 9:
+unique(BES8$EUIntegrationSelf)
+
+#Wave 8
+BES8 <- BES8 %>%
+  mutate(EUIntegrationCon = case_when(EUIntegrationCon == "Unite fully with the European Union" ~ 0,
+                                      EUIntegrationCon == "1" ~ 1, EUIntegrationCon == "2" ~ 2,EUIntegrationCon == "3" ~ 3,EUIntegrationCon == "4" ~ 4,EUIntegrationCon == "5" ~ 5,EUIntegrationCon == "6" ~ 6,
+                                      EUIntegrationCon == "7" ~ 7,EUIntegrationCon == "8" ~ 8,EUIntegrationCon == "9" ~ 9,EUIntegrationCon == "Protect our independence" ~ 10))
+BES8 <- BES8 %>%
+  mutate(EUIntegrationLab = case_when(EUIntegrationLab == "Unite fully with the European Union" ~ 0,
+                                      EUIntegrationLab == "1" ~ 1, EUIntegrationLab == "2" ~ 2,EUIntegrationLab == "3" ~ 3,EUIntegrationLab == "4" ~ 4,EUIntegrationLab == "5" ~ 5,EUIntegrationLab == "6" ~ 6,
+                                      EUIntegrationLab == "7" ~ 7,EUIntegrationLab == "8" ~ 8,EUIntegrationLab == "9" ~ 9,EUIntegrationLab == "Protect our independence" ~ 10))
+
+
+BES8 <- BES8 %>%
+  mutate(EUIntegrationSelf = case_when(EUIntegrationSelf == "Unite fully with the European Union" ~ 0,
+                                       EUIntegrationSelf == "1" ~ 1, EUIntegrationSelf == "2" ~ 2,EUIntegrationSelf == "3" ~ 3,EUIntegrationSelf == "4" ~ 4,EUIntegrationSelf == "5" ~ 5,EUIntegrationSelf == "6" ~ 6,
+                                       EUIntegrationSelf == "7" ~ 7,EUIntegrationSelf == "8" ~ 8,EUIntegrationSelf == "9" ~ 9,EUIntegrationSelf == "Protect our independence" ~ 10))
+
+
+#Wave 9
+BES9 <- BES9 %>%
+  mutate(EUIntegrationCon = case_when(EUIntegrationCon == "Unite fully with the European Union" ~ 0,
+                                      EUIntegrationCon == "1" ~ 1, EUIntegrationCon == "2" ~ 2,EUIntegrationCon == "3" ~ 3,EUIntegrationCon == "4" ~ 4,EUIntegrationCon == "5" ~ 5,EUIntegrationCon == "6" ~ 6,
+                                      EUIntegrationCon == "7" ~ 7, EUIntegrationCon == "8" ~ 8,EUIntegrationCon == "9" ~ 9,EUIntegrationCon == "Protect our independence" ~ 10))
+
+BES9 <- BES9 %>%
+  mutate(EUIntegrationLab = case_when(EUIntegrationLab == "Unite fully with the European Union" ~ 0,
+                                      EUIntegrationLab == "1" ~ 1, EUIntegrationLab == "2" ~ 2,EUIntegrationLab == "3" ~ 3,EUIntegrationLab == "4" ~ 4,EUIntegrationLab == "5" ~ 5,EUIntegrationLab == "6" ~ 6,
+                                      EUIntegrationLab == "7" ~ 7,EUIntegrationLab == "8" ~ 8,EUIntegrationLab == "9" ~ 9,EUIntegrationLab == "Protect our independence" ~ 10))
+
+
+BES9 <- BES9 %>%
+  mutate(EUIntegrationSelf = case_when(EUIntegrationSelf == "Unite fully with the European Union" ~ 0,
+                                       EUIntegrationSelf == "1" ~ 1, EUIntegrationSelf == "2" ~ 2,EUIntegrationSelf == "3" ~ 3,EUIntegrationSelf == "4" ~ 4,EUIntegrationSelf == "5" ~ 5,EUIntegrationSelf == "6" ~ 6,
+                                       EUIntegrationSelf == "7" ~ 7,EUIntegrationSelf == "8" ~ 8,EUIntegrationSelf == "9" ~ 9,EUIntegrationSelf == "Protect our independence" ~ 10))
+
+
+
+##Mean of Perceived Euroskepticism of Conservatives and Labour in Waves 8 and 9
+mean(BES8$EUIntegrationCon,na.rm=TRUE)
+mean(BES9$EUIntegrationCon,na.rm=TRUE)
+mean(BES8$EUIntegrationLab,na.rm=TRUE)
+mean(BES9$EUIntegrationLab,na.rm=TRUE)
+
+#Other Variables
+#White vs Non-White
+BES8$white <- ifelse(BES8$profile_ethnicity=="White British" |BES8$profile_ethnicity=="Any other white background",1,0)
+
+#Wave 8: Modification for Analysis
+BES8$EUIntegrationCon8 <- BES8$EUIntegrationCon
+BES8$EUIntegrationSelf8 <- BES8$EUIntegrationSelf 
+
+BES8$partyId8 <- BES8$partyId
+BES8$Con <- ifelse(BES8$partyId=="Conservative",1,0)
+BES8$Con8 <- BES8$Con 
+
+#Wave 9: Modification for Analysis
+BES9$EUIntegrationCon9 <- BES9$EUIntegrationCon
+BES9$EUIntegrationSelf9 <- BES9$EUIntegrationSelf 
+
+BES9$Con <- ifelse(BES9$partyId=="Conservative",1,0)
+BES9$Con9 <- BES9$Con 
+BES9$partyId9 <- BES9$partyId
+
+######################################
+# REPLICATION: First Regression   
+######################################
+
+##subset Wave 8 to conservatives
+BES8subcons<- BES8[BES8$partyId=="Conservative",] 
+
+#Merge Subset and Wave 9
+merge <- merge(BES8subcons, BES9,by="id")
+
+#Variable: Party Switchers (in Subset with only Conservatives; Defection)
+merge$partyswitcher  <- ifelse(merge$partyId8!=merge$partyId9,1,0)
+
+# Table 1 in Research Paper 
+Reg1 <- lm(merge$partyswitcher~merge$EUIntegrationSelf8)
+summary(Reg1)
+
+#additional control: change in perception of Cons Euroskeptism
+merge$Conchange <- merge$EUIntegrationCon9 - merge$EUIntegrationCon8
+intreg1<- lm(merge$partyswitcher~merge$EUIntegrationSelf8 * merge$Conchange)
+summary(intreg1)
+
+#additional demographic controls 
+intreg1a <- lm(merge$partyswitcher~merge$EUIntegrationSelf8 * merge$Conchange + merge$age.x + merge$gender.x + merge$white + as.factor(merge$country.x))
+summary(intreg1a)
+
+stargazer(Reg1, intreg1, intreg1a, title="Euroskepticism and Defection from the Conservatives",no.space=TRUE,star.cutoffs = c(0.05, 0.01,0.001)) 
+
+
+#percent switch
+merge45 <- merge[merge$EUIntegrationSelf8=="5" | merge$EUIntegrationSelf8=="4",]
+merge23 <- merge[merge$EUIntegrationSelf8=="3" | merge$EUIntegrationSelf8=="2",]
+merge01 <- merge[merge$EUIntegrationSelf8=="1" | merge$EUIntegrationSelf8=="0",]
+mean(merge45$partyswitcher,na.rm=TRUE)
+mean(merge23$partyswitcher,na.rm=TRUE)
+mean(merge01$partyswitcher,na.rm=TRUE)
+
+######################################
+# REPLICATION: Second Regression   
+######################################
+
+#Subset Wave 8 to Non-Conservatives
+BES8notcons<- BES8[BES8$partyId!="Conservative",] 
+
+#Merge Subset and Wave 9
+merge2 <- merge(BES8notcons, BES9,by="id")
+
+#Variable: Party Switchers (in Subset with only Non-Conservatives; Joining)
+merge2$switchtocons <- ifelse(merge2$partyId9=="Conservative",1,0)
+mean(merge2$switchtocons)
+
+#Regressoin 2
+Reg2 <- lm(merge2$switchtocons~  merge2$EUIntegrationSelf8)
+summary(Reg2)
+
+#additional control: Perceptions of Cons' Euroscepticism Change 
+merge2$Conchange <- merge2$EUIntegrationCon9 - merge2$EUIntegrationCon8
+intreg2 <- lm(merge2$switchtocons~merge2$EUIntegrationSelf8*merge2$Conchange)
+summary(intreg2)
+
+#additional demographic controls
+intreg2a <- lm(merge2$switchtocons~merge2$EUIntegrationSelf8*merge2$Conchange+ merge2$age.x + merge2$gender.x + merge2$white + as.factor(merge2$country.x))
+summary(intreg2a)
+
+# Table 2
+stargazer(Reg2, intreg2, intreg2a, title="Euroskepticism and Joining the Conservatives",no.space=TRUE,star.cutoffs = c(0.05, 0.01,0.001)) 
+
+
+#percent switched (Euroscpetics to conservatives)
+merge2910 <- merge2[merge2$EUIntegrationSelf8=="9" | merge2$EUIntegrationSelf8=="10",]
+merge278 <- merge2[merge2$EUIntegrationSelf8=="7" | merge2$EUIntegrationSelf8=="8",]
+merge256 <- merge2[merge2$EUIntegrationSelf8=="5" | merge2$EUIntegrationSelf8=="6",]
+mean(merge2910$switchtocons,na.rm=TRUE)
+mean(merge278$switchtocons,na.rm=TRUE)
+mean(merge256$switchtocons,na.rm=TRUE)
+
+######################################
+# REPLICATION: Appendix Table 7
+######################################
+##additional:
+
+# Table 7 (appendix)
+intreg2Lab <- lm(switchtocons~EUIntegrationSelf8*Conchange+ age.x + gender.x + white + as.factor(country.x), data=merge2,partyId8=="Labour")
+summary(intreg2Lab)
+intreg2LD <- lm(switchtocons~EUIntegrationSelf8*Conchange+ age.x + gender.x + white + as.factor(country.x), data=merge2,partyId8=="Liberal Democrat")
+summary(intreg2LD)
+intreg2UKIP<- lm(switchtocons~EUIntegrationSelf8*Conchange+ age.x + gender.x + white + as.factor(country.x), data=merge2,partyId8=="United Kingdom Independence Party (UKIP)")
+summary(intreg2UKIP)
+intreg2Green<- lm(switchtocons~EUIntegrationSelf8*Conchange+ age.x + gender.x + white + as.factor(country.x), data=merge2,partyId8=="Green Party")
+summary(intreg2Green)
+intreg2SNP<- lm(switchtocons~EUIntegrationSelf8*Conchange+ age.x + gender.x + white + as.factor(country.x), data=merge2,partyId8=="Scottish National Party (SNP)")
+summary(intreg2SNP)
+intreg2none<- lm(switchtocons~EUIntegrationSelf8*Conchange+ age.x + gender.x + white + as.factor(country.x), data=merge2,partyId8=="No - none")
+summary(intreg2none)
+
+#stargazer(intreg2Lab,intreg2LD,intreg2UKIP,intreg2Green,intreg2SNP, intreg2none,title="Euroskepticism and Joining the Conservatives (by Pre-Referendum Partisan Affiliation)",no.space=TRUE,star.cutoffs = c(0.05, 0.01,0.001))
+
+#that line does NOT work:
+stargazer(intreg2Lab)
+stargazer(intreg2LD)
+stargazer(intreg2UKIP)
+stargazer(intreg2Green)
+stargazer(intreg2SNP)
+stargazer(intreg2none)
+
+
+######################################
+# REPLICATION: Update Policy Preferences?   
+######################################
+
+##Analysis: Do Conservative Partisans update their policy views in line with their party's shift in position?
+
+#Variable to identify whether respondents' own euroscepticism changed between wave 8 and 9
+merge$Euroskepticismchange <- merge$EUIntegrationSelf9 - merge$EUIntegrationSelf8
+
+#Subsets of those who very strongly and not very strongly identify with the Conservatives
+mergestrong <- merge[merge$partyIdStrength.x=="Very strong",]
+mergenotstrong <- merge[merge$partyIdStrength.x!="Very strong",]
+
+
+#Table 3 in Research Paper
+#Regression: change in euroscepticism regressed on perceived Conchange among those that identify strongly with the party 
+intreg3B <- lm(Euroskepticismchange~Conchange+gender.x + age.x +white+ as.factor(country.x),data=mergestrong)
+summary(intreg3B) 
+
+#Regression: change in euroscepticism regressed on perceived Conchange among those that do not identify strongly with the party 
+intreg3A <- lm(Euroskepticismchange~Conchange+gender.x + age.x +white+ as.factor(country.x),data=mergenotstrong)
+summary(intreg3A) 
+
+stargazer(intreg3A,intreg3B, title="Individual Shifts in Euroskepticism",no.space=TRUE,star.cutoffs = c(0.05, 0.01,0.001))
+
+
+
+#Merge Waves 8 and 9 (complete waves)
+bigmerge <- merge(BES8,BES9,by="id")
+
+#Variables: changes in euroscepticism and perception of Conservatives europscepticism in the whole sample
+bigmerge$Euroskepticismchange <- bigmerge$EUIntegrationSelf9 - bigmerge$EUIntegrationSelf8
+bigmerge$Conchange <- bigmerge$EUIntegrationCon9 - bigmerge$EUIntegrationCon8
+
+
+#Variables: Partisan Identity Three Groups 
+bigmerge$Partisan[bigmerge$partyId8!="Conservative"] <- "Non-Conservative"
+bigmerge$Partisan[bigmerge$partyId8=="Conservative" & bigmerge$partyIdStrength.x != "Very strong"] <- "Moderate Conservative"
+bigmerge$Partisan[bigmerge$partyId8=="Conservative" & bigmerge$partyIdStrength.x == "Very strong"] <- "Very Strong Conservative"
+
+#Subsets for each group
+bigmergenon <- bigmerge[bigmerge$Partisan=="Non-Conservative",]
+bigmergemod<- bigmerge[bigmerge$Partisan=="Moderate Conservative",]
+bigmergever <- bigmerge[bigmerge$Partisan=="Very Strong Conservative",]
+
+#Mean of each group in perceptions of Cons' position change and own euroscpeticism
+mean(bigmergenon$Conchange,na.rm=TRUE)
+mean(bigmergemod$Conchange,na.rm=TRUE)
+mean(bigmergever$Conchange,na.rm=TRUE)
+mean(bigmergenon$Euroskepticismchang,na.rm=TRUE)
+mean(bigmergemod$Euroskepticismchang,na.rm=TRUE)
+mean(bigmergever$Euroskepticismchang,na.rm=TRUE)
+
+#Partisan Identity as Factor variable with three levels 
+bigmerge$Partisan <- factor(bigmerge$Partisan, levels = c("Non-Conservative", "Moderate Conservative", "Very Strong Conservative"))
+
+#Figure 1 in Research Paper 
+library(ggplot2)
+g <- ggplot(bigmerge,aes(y=Euroskepticismchange,x=Conchange, color=Partisan))+geom_point(size = 0.1)+stat_smooth(method="lm",se=TRUE) +theme_bw() +xlab("Perceived Change in Conservative Euroskepticism") + ylab("Change in Personal Euroskepticism") 
+
+g
+
+
+ggsave("figureone.png", plot = g)
+
+
+######################################
+# REPLICATION: Update Vote Choice?   
+######################################
+
+### Wave 6 (2015 post-election) and Wave 13 (2017 post-election) 
+#make race variable
+BES6$white <- ifelse(BES6$profile_ethnicity=="White British" |BES6$profile_ethnicity=="Any other white background",1,0)
+#recode EU integration
+BES6 <- BES6 %>%
+  mutate(EUIntegrationCon = case_when(EUIntegrationCon == "Unite fully with the European Union" ~ 0,
+                                      EUIntegrationCon == "1" ~ 1, EUIntegrationCon == "2" ~ 2,EUIntegrationCon == "3" ~ 3,EUIntegrationCon == "4" ~ 4,EUIntegrationCon == "5" ~ 5,EUIntegrationCon == "6" ~ 6,
+                                      EUIntegrationCon == "7" ~ 7,EUIntegrationCon == "8" ~ 8,EUIntegrationCon == "9" ~ 9,EUIntegrationCon == "Protect our independence" ~ 10))
+BES6 <- BES6 %>%
+  mutate(EUIntegrationLab = case_when(EUIntegrationLab == "Unite fully with the European Union" ~ 0,
+                                      EUIntegrationLab == "1" ~ 1, EUIntegrationLab == "2" ~ 2,EUIntegrationLab == "3" ~ 3,EUIntegrationLab == "4" ~ 4,EUIntegrationLab == "5" ~ 5,EUIntegrationLab == "6" ~ 6,
+                                      EUIntegrationLab == "7" ~ 7,EUIntegrationLab == "8" ~ 8,EUIntegrationLab == "9" ~ 9,EUIntegrationLab == "Protect our independence" ~ 10))
+
+
+
+BES6$generalElectionVote15 <- BES6$generalElectionVote
+
+BES6$EUIntegrationLab15 <- BES6$EUIntegrationLab
+BES6$EUIntegrationCon15 <- BES6$EUIntegrationCon
+
+
+
+##
+BES6 <- BES6 %>%
+  mutate(EUIntegrationSelf = case_when(EUIntegrationSelf == "Unite fully with the European Union" ~ 0,
+                                       EUIntegrationSelf == "1" ~ 1, EUIntegrationSelf == "2" ~ 2,EUIntegrationSelf == "3" ~ 3,EUIntegrationSelf == "4" ~ 4,EUIntegrationSelf == "5" ~ 5,EUIntegrationSelf == "6" ~ 6,
+                                       EUIntegrationSelf == "7" ~ 7,EUIntegrationSelf == "8" ~ 8,EUIntegrationSelf == "9" ~ 9,EUIntegrationSelf == "Protect our independence" ~ 10))
+
+BES6$EUIntegrationSelf6 <- BES6$EUIntegrationSelf
+
+
+
+#conservative vote variable
+BES6$Convote <- ifelse(BES6$generalElectionVote15=="Conservative",1,0)
+
+
+##conservative subset
+BES6con <- BES6[BES6$Convote==1,]
+
+
+
+##non conservative subset
+BES6notcon <- BES6[BES6$Convote==0,]
+
+
+## vote choice variable
+BES13$generalElectionVote17 <- BES13$generalElectionVote
+#recode integration values
+BES13 <- BES13 %>%
+  mutate(EUIntegrationSelf = case_when(EUIntegrationSelf == "Unite fully with the European Union" ~ 0,
+                                       EUIntegrationSelf == "1" ~ 1, EUIntegrationSelf == "2" ~ 2,EUIntegrationSelf == "3" ~ 3,EUIntegrationSelf == "4" ~ 4,EUIntegrationSelf == "5" ~ 5,EUIntegrationSelf == "6" ~ 6,
+                                       EUIntegrationSelf == "7" ~ 7,EUIntegrationSelf == "8" ~ 8,EUIntegrationSelf == "9" ~ 9,EUIntegrationSelf == "Protect our independence" ~ 10))
+
+BES13$EUIntegrationSelf13 <- BES13$EUIntegrationSelf
+
+BES13 <- BES13 %>%
+  mutate(EUIntegrationCon = case_when(EUIntegrationCon == "Unite fully with the European Union" ~ 0,
+                                      EUIntegrationCon == "1" ~ 1, EUIntegrationCon == "2" ~ 2,EUIntegrationCon == "3" ~ 3,EUIntegrationCon == "4" ~ 4,EUIntegrationCon == "5" ~ 5,EUIntegrationCon == "6" ~ 6,
+                                      EUIntegrationCon == "7" ~ 7,EUIntegrationCon == "8" ~ 8,EUIntegrationCon == "9" ~ 9,EUIntegrationCon == "Protect our independence" ~ 10))
+
+BES13 <- BES13 %>%
+  mutate(EUIntegrationLab = case_when(EUIntegrationLab == "Unite fully with the European Union" ~ 0,
+                                      EUIntegrationLab == "1" ~ 1, EUIntegrationLab == "2" ~ 2,EUIntegrationLab == "3" ~ 3,EUIntegrationLab == "4" ~ 4,EUIntegrationLab == "5" ~ 5,EUIntegrationLab == "6" ~ 6,
+                                      EUIntegrationLab == "7" ~ 7,EUIntegrationLab == "8" ~ 8,EUIntegrationLab == "9" ~ 9,EUIntegrationLab == "Protect our independence" ~ 10))
+
+
+
+BES13$generalElectionVote17 <- BES13$generalElectionVote
+
+BES13$EUIntegrationLab17 <- BES13$EUIntegrationLab
+BES13$EUIntegrationCon17 <- BES13$EUIntegrationCon
+
+
+##people who voted Con in 2015
+BES13con <- merge(BES6con,BES13, by="id")
+BES13con$Conchange <- BES13con$EUIntegrationCon17 - BES13con$EUIntegrationCon15
+
+BES13con$voteswitcher  <- ifelse(BES13con$generalElectionVote17!=BES13con$generalElectionVote15,1,0)
+# Table 5
+GG <- lm(voteswitcher~EUIntegrationSelf6, data=BES13con)
+summary(GG)
+HH <- lm(voteswitcher~EUIntegrationSelf6*Conchange, data=BES13con)
+
+II <- lm(voteswitcher~EUIntegrationSelf6*Conchange + age + gender.x + white+as.factor(country.x), data=BES13con)
+stargazer(GG,HH,II, title="Euroskepticism and Defecting from Conservatives",no.space=TRUE,star.cutoffs = c(0.05, 0.01,0.001))
+##people who voted not Con in 2015
+BES13notcon <- merge(BES6notcon,BES13, by="id")
+BES13notcon$Conchange <- BES13notcon$EUIntegrationCon17 - BES13notcon$EUIntegrationCon15
+BES13notcon$switchtocon <- ifelse(BES13notcon$generalElectionVote17=="Conservative",1,0)
+# Table 6
+G <- lm(switchtocon~EUIntegrationSelf6, data=BES13notcon)
+H <- lm(switchtocon~EUIntegrationSelf6*Conchange, data=BES13notcon)
+I <-  lm(switchtocon~EUIntegrationSelf6*Conchange + age + gender.x + white+as.factor(country.x), data=BES13notcon)
+
+stargazer(G,H,I, title="Euroskepticism and Switching Vote to Conservatives",no.space=TRUE, star.cutoffs = c(0.05, 0.01,0.001))
+
+
+#####################
+# EXTENSIONS
+#####################
+###the extension focuses on the main models. 
+
+#####################
+# LOGISTIC MODELS 
+#####################
+#basically a robustness check since the outcome is binary. 
+###Regression 1
+# Table 1 in Research Paper 
+intreg1a <- lm(merge$partyswitcher~merge$EUIntegrationSelf8 * merge$Conchange + merge$age.x + merge$gender.x + merge$white + as.factor(merge$country.x))
+summary(intreg1a)
+
+logit1 <- glm(partyswitcher ~ EUIntegrationSelf8 * Conchange +
+                age.x + gender.x + white + as.factor(country.x),
+              data = merge, family = binomial(link = "logit"))
+summary(logit1)
+
+#OR
+exp(cbind(OR = coef(logit1), confint(logit1)))
+
+###Regression 2
+intreg2a <- lm(merge2$switchtocons~merge2$EUIntegrationSelf8*merge2$Conchange+ merge2$age.x + merge2$gender.x + merge2$white + as.factor(merge2$country.x))
+summary(intreg2a)
+
+logit2 <- glm(switchtocons ~ EUIntegrationSelf8 * Conchange +
+                age.x + gender.x + white + as.factor(country.x),
+              data = merge2, family = binomial(link = "logit"))
+summary(logit2)
+exp(cbind(OR = coef(logit2), confint(logit2)))
+
+#####################
+# EXTENSION: Partisan Strength
+#####################
+#Strength merge
+summary(merge$partyIdStrength.x)
+merge$partyIdStrength_extension <- merge$partyIdStrength.x
+merge$partyIdStrength_extension[merge$partyIdStrength_extension == "Don't know"] <- NA
+merge$partyIdStrength_extension <- factor(merge$partyIdStrength_extension)
+
+# Check
+levels(merge$partyIdStrength_extension)
+table(merge$partyIdStrength_extension, useNA = "ifany")
+
+#Strength merge2
+summary(merge2$partyIdStrength.x)
+merge2$partyIdStrength_extension <- merge2$partyIdStrength.x
+merge2$partyIdStrength_extension[merge2$partyIdStrength_extension == "Don't know"] <- NA
+merge2$partyIdStrength_extension <- factor(merge2$partyIdStrength_extension)
+
+# Check
+levels(merge2$partyIdStrength_extension)
+table(merge2$partyIdStrength_extension, useNA = "ifany")
+
+
+#Regression 1: Defection
+#Table 1 
+intreg1a <- lm(data= merge,partyswitcher~EUIntegrationSelf8 *Conchange + age.x + gender.x + white + as.factor(country.x))
+summary(intreg1a)
+
+#party ID strength added to model
+defection_id <- lm(data= merge, partyswitcher~EUIntegrationSelf8 *Conchange + as.factor(partyIdStrength_extension) + age.x + gender.x + white + as.factor(country.x))
+summary(defection_id)
+
+stargazer(intreg1a,defection_id, title="Defection from the Conservatives (Extension)",no.space=TRUE,star.cutoffs = c(0.1, 0.05, 0.01,0.001))
+
+#Regression 2: Join
+intreg2a <- lm(merge2$switchtocons~merge2$EUIntegrationSelf8*merge2$Conchange+ merge2$age.x + merge2$gender.x + merge2$white + as.factor(merge2$country.x))
+summary(intreg2a)
+
+#party ID strength added to model
+join_id <- lm(data= merge2, switchtocons~EUIntegrationSelf8 *Conchange + as.factor(partyIdStrength_extension) + age.x + gender.x + white + as.factor(country.x))
+summary(join_id)
+
+#####################
+# EXTENSION: Attitude vs Behaviour
+#####################
+summary(merge$euRefVote.x)
+summary(merge2$euRefVote.x)
+
+# Leave = 1, Remain = 0 
+merge$euRefVote_ext <- ifelse(merge$euRefVote.x == "Leave the EU", 1,
+                              ifelse(merge$euRefVote.x == "Stay/remain in the EU", 0, NA))
+table(merge$euRefVote_ext, useNA="ifany")
+merge$euRefVote_ext_fac <- factor(merge$euRefVote_ext)
+table(merge$euRefVote_ext_fac, useNA="ifany")
+
+
+
+
+merge2$euRefVote_ext <- ifelse(merge2$euRefVote.x == "Leave the EU", 1,
+                              ifelse(merge2$euRefVote.x == "Stay/remain in the EU", 0, NA))
+
+table(merge2$euRefVote_ext, useNA="ifany")
+merge2$euRefVote_ext_fac <- factor(merge2$euRefVote_ext)
+table(merge2$euRefVote_ext_fac, useNA="ifany")
+
+#Regression 1: Defection
+#Table 1 
+refvote_defect <- lm(data= merge,partyswitcher~euRefVote_ext_fac *Conchange + age.x + gender.x + white + as.factor(country.x))
+summary(refvote_defect)
+summary(intreg1a)
+
+#Regression 2: Join
+refvote_join <- lm(merge2$switchtocons~merge2$euRefVote_ext_fac*merge2$Conchange+ merge2$age.x + merge2$gender.x + merge2$white + as.factor(merge2$country.x))
+summary(refvote_join)
+summary(intreg2a)
+
